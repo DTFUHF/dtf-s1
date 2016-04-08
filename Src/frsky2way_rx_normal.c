@@ -96,9 +96,13 @@ uint8_t frsky_rx_getpkt(void)
     {
       CC2500_ReadRXData(rxmsg.packet, rx_packet_length);
       
-      if ((rxmsg.rx_packet_data.header_bindcode == m_config.frsky2way_bind_info.bind_id) && \
-      (rxmsg.rx_packet_data.len == 0x11) && \
-      ((rxmsg.rx_packet_data.header_magic == 0x0100) || (rxmsg.rx_packet_data.header_magic == 0x0300))) // address check, the CRC part at the end is weird tho, matches 0xA0?
+      if ((rxmsg.rx_packet_data.header_bindcode == m_config.frsky2way_bind_info.bind_id) && (rxmsg.rx_packet_data.len == 0x11))
+        /* So, there's two bytes in the packet header that indicate something.
+         * 0x0100 - North American launch day taranis A
+         *        - DJT jr module
+         * 0x0300 - XJT jr module
+         * There are others out there which are unknown, so this check is removed for now.
+         * Also, there's a CRC or something at the end. But it isn't. 0xA0 bits will always match it. */
         ret = rx_packet_length;
     }
     CC2500_Strobe(CC2500_STROBE_SFRX);
@@ -123,6 +127,7 @@ void frsky2way_build_telem_packet(void)
   txmsg.packet[4] = 0x00; // dummy
   //  byte 5   = rssi
   //txmsg.packet[5] = 0x60; // dummy data, i think this sends back raw rssi values (but they are a bit too low). opentx seems to want value 0-100 (%?) with alarm at 45 TODO:
+  // values 128-255 cause constant beep; 0-44 pulsing beep; 45-127 no beep (on XJT)
   txmsg.packet[5] = rssi;
   // other bytes as shown in frsky sport pdf
 }
