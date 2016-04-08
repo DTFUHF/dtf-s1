@@ -103,6 +103,7 @@ uint16_t sbus_transform(uint32_t c)
 
 void sbus_update(void)
 {
+  // TODO: clean this up, horrible.
   sbusStop = SBUS_STATE_START;
   sbus_data.sbus_chans.startbyte = 0x0F;
   sbus_data.sbus_chans.chan01 = sbus_transform(channelValues[0]);

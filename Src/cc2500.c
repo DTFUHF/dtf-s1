@@ -1,6 +1,8 @@
 
 #include "board.h"
 
+// TODO: everything here
+
 void CC2500_WriteReg(uint8_t address, uint8_t data)
 {
   #if 1

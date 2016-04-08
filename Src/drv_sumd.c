@@ -90,6 +90,7 @@ void sumd_stop(void)
 
 void sumd_update(void)
 {
+  // TODO: clean this up, don't init the header every time, dummy.
   sumdStop = SUMD_STATE_START;
   sumd_eeprom_crc_init(); // TODO: static init struct
   workingBuf[0] = 0xA8;
