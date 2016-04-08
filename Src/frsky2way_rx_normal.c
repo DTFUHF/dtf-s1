@@ -98,7 +98,7 @@ uint8_t frsky_rx_getpkt(void)
       
       if ((rxmsg.rx_packet_data.header_bindcode == m_config.frsky2way_bind_info.bind_id) && \
       (rxmsg.rx_packet_data.len == 0x11) && \
-      (rxmsg.rx_packet_data.header_magic == 0x0100)) // address check, the CRC part at the end is weird tho, matches 0xA0?
+      ((rxmsg.rx_packet_data.header_magic == 0x0100) || (rxmsg.rx_packet_data.header_magic == 0x0300))) // address check, the CRC part at the end is weird tho, matches 0xA0?
         ret = rx_packet_length;
     }
     CC2500_Strobe(CC2500_STROBE_SFRX);
