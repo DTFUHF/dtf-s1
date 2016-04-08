@@ -5,7 +5,7 @@
 #include "crc.h"
 #include <string.h>
 
-master_config_t m_config;
+__align(4) master_config_t m_config;
 
 void eeprom_crc_init(void)
 {
