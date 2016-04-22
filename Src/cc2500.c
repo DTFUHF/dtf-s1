@@ -61,7 +61,6 @@ void CC2500_WriteTXData(uint8_t *packet, uint8_t length)
   spi1Select();
   HAL_SPI_Transmit(&hspi1, &tx, 1, 2);
   HAL_SPI_TransmitReceive(&hspi1, packet, zeroes, length, 2);
-  //HAL_SPI_Transmit(&hspi1, packet, length, 2);
   spi1Unselect();
   __enable_irq();
   
