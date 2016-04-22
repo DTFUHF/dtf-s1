@@ -128,7 +128,8 @@ void frsky2way_build_telem_packet(void)
   //  byte 5   = rssi
   //txmsg.packet[5] = 0x60; // dummy data, i think this sends back raw rssi values (but they are a bit too low). opentx seems to want value 0-100 (%?) with alarm at 45 TODO:
   // values 128-255 cause constant beep; 0-44 pulsing beep; 45-127 no beep (on XJT)
-  txmsg.packet[5] = rssi;
+  // 128-255 do not show as negative on taranis rssi telemetry page, maybe only 7 bits needed.
+  txmsg.packet[5] = 0x7f & rssi; // TODO: fix
   // other bytes as shown in frsky sport pdf
 }
 

@@ -83,9 +83,9 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
+  MX_CRC_Init();
   MX_SPI1_Init();
   MX_USB_DEVICE_Init();
-  MX_CRC_Init();
 
   /* USER CODE BEGIN 2 */
   #if TX_CARRIER_TEST == 1
