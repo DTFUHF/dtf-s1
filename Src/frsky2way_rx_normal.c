@@ -193,10 +193,17 @@ void frsky_rx_loop(void)
       switch (fail_state)
       {
         case STATE_RUNNING:
-          // expecting a pkt but didnt get it
+          /* If we expected a packet and didn't get it, take action after a timeout. */
           if (time > (nextPktTime + 2))
           {
+            /* Here we 'emulate' a packet RXing in order to prepare for the next action. */
+            /* lastHopTime is updated to the time the packet should have been received, which is the current nextPktTime. */
+            /* nextPktTime is updated to reflect the next anticipated packet, in 9 or 18ms. */
+            /* lastPktTime is untouched, as no real RXing was done. */
             hopchan = (hopchan + 1) % NUM_HOP_CHANNELS;
+            frsky_state = (frsky_state + 1) % NUM_FRSKY_STATES;
+            frsky_rx_toggle_ant();
+            lastHopTime = nextPktTime;
             if (frsky_state == FRSKY_RX3)
             {
               nextPktTime = nextPktTime + 18;
@@ -205,13 +212,10 @@ void frsky_rx_loop(void)
               nextPktTime = nextPktTime + 9;
               rx_state = STATE_WILL_RX;
             }
-            lastHopTime = lastHopTime + 9;
-            frsky_state = (frsky_state + 1) % NUM_FRSKY_STATES;
-            
-            frsky_rx_toggle_ant();
           }
+          /* if it has been a long time since the last valid packet, go to a different hop sequence in an attempt to find the tx's hop phase. */
           /* TODO: make this timeout configurable, maybe */
-          if (time > (lastPktTime + 1000))
+          if (time > (lastPktTime + 1000)) 
             fail_state = STATE_SEARCH;
           break;
           /* end STATE_RUNNING */
@@ -239,6 +243,8 @@ void frsky_rx_loop(void)
       /* end STATE_RXING */
       
     case STATE_RXD:
+      /* lastPktTime and lastHopTime are both updated with the current time. */
+      /* nextPktTime is updated to reflect the next anticipated packet, in 9 or 18ms. */
       lastPktTime = time;
       lastHopTime = time;
       hopchan = (rxmsg.packet[3] + 1) % NUM_HOP_CHANNELS;
