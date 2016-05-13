@@ -188,7 +188,10 @@ void frsky_rx_loop(void)
     
     case STATE_RXING:
       if (frsky_rx_getpkt() != 0)
+      {
         rx_state = STATE_RXD;
+        break;
+      }
       
       switch (fail_state)
       {
@@ -204,7 +207,7 @@ void frsky_rx_loop(void)
             frsky_state = (frsky_state + 1) % NUM_FRSKY_STATES;
             frsky_rx_toggle_ant();
             lastHopTime = nextPktTime;
-            if (frsky_state == FRSKY_RX3)
+            if (frsky_state == FRSKY_TX_TELEM)
             {
               nextPktTime = nextPktTime + 18;
               rx_state = STATE_PREPARE_TX;
