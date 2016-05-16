@@ -5,7 +5,11 @@
 #include "crc.h"
 #include <string.h>
 
+#ifndef __CC_ARM
+__attribute__ ((aligned (4))) master_config_t m_config;
+#else
 __align(4) master_config_t m_config;
+#endif
 
 void eeprom_crc_init(void)
 {
