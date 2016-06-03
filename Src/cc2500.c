@@ -7,7 +7,7 @@ void CC2500_WriteReg(uint8_t address, uint8_t data)
   __DSB();
   __ISB();
   spi1Select();
-  HAL_SPI_Transmit(&hspi1, &address, 1, 1);;
+  HAL_SPI_Transmit(&hspi1, &address, 1, 1);
   HAL_SPI_Transmit(&hspi1, &data, 1, 1);
   spi1Unselect();
   __enable_irq();
