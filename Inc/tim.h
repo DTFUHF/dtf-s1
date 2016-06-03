@@ -51,6 +51,8 @@ extern TIM_HandleTypeDef htim1;
 
 /* USER CODE END Private defines */
 
+extern void Error_Handler(void);
+
 void MX_TIM1_Init(void);
                     
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);

@@ -51,14 +51,17 @@ void MX_CRC_Init(void)
   hcrc.Init.InputDataInversionMode = CRC_INPUTDATA_INVERSION_NONE;
   hcrc.Init.OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_DISABLE;
   hcrc.InputDataFormat = CRC_INPUTDATA_FORMAT_HALFWORDS;
-  HAL_CRC_Init(&hcrc);
+  if (HAL_CRC_Init(&hcrc) != HAL_OK)
+  {
+    Error_Handler();
+  }
 
 }
 
-void HAL_CRC_MspInit(CRC_HandleTypeDef* hcrc)
+void HAL_CRC_MspInit(CRC_HandleTypeDef* crcHandle)
 {
 
-  if(hcrc->Instance==CRC)
+  if(crcHandle->Instance==CRC)
   {
   /* USER CODE BEGIN CRC_MspInit 0 */
 
@@ -71,10 +74,10 @@ void HAL_CRC_MspInit(CRC_HandleTypeDef* hcrc)
   }
 }
 
-void HAL_CRC_MspDeInit(CRC_HandleTypeDef* hcrc)
+void HAL_CRC_MspDeInit(CRC_HandleTypeDef* crcHandle)
 {
 
-  if(hcrc->Instance==CRC)
+  if(crcHandle->Instance==CRC)
   {
   /* USER CODE BEGIN CRC_MspDeInit 0 */
 
