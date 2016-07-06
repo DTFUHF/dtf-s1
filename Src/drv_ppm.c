@@ -78,6 +78,10 @@ void ppm_update(void)
 
 void ppm_HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *  htim)
 {
+  __disable_irq();
+  __DSB();
+  __ISB();
+  
   if(htim->Instance==TIM1)
   {
     if (ppmStop == PPM_STATE_STOPPED)
@@ -104,4 +108,5 @@ void ppm_HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *  htim)
       }
     }
   }
+  __enable_irq();
 }

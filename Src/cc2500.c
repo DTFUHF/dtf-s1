@@ -3,13 +3,16 @@
 
 void CC2500_WriteReg(uint8_t address, uint8_t data)
 {
+  while (HAL_SPI_GetState(&hspi1) != HAL_SPI_STATE_READY){};
   __disable_irq();
   __DSB();
   __ISB();
+    
   spi1Select();
   HAL_SPI_Transmit(&hspi1, &address, 1, 1);
   HAL_SPI_Transmit(&hspi1, &data, 1, 1);
   spi1Unselect();
+    
   __enable_irq();
 }
 
@@ -17,13 +20,16 @@ uint8_t CC2500_ReadReg(uint8_t address)
 {
   uint8_t buf = (CC2500_READ_SINGLE | address);
 
+  while (HAL_SPI_GetState(&hspi1) != HAL_SPI_STATE_READY){};
   __disable_irq();
   __DSB();
   __ISB();
+    
   spi1Select();
   HAL_SPI_Transmit(&hspi1, &buf, 1, 1);
   HAL_SPI_TransmitReceive(&hspi1, &buf, &buf, 1, 1);
   spi1Unselect();
+    
   __enable_irq();
     
   return buf;
@@ -38,12 +44,15 @@ void CC2500_Reset(void)
 
 void CC2500_Strobe(uint8_t strobe)
 {
+  while (HAL_SPI_GetState(&hspi1) != HAL_SPI_STATE_READY){};
   __disable_irq();
   __DSB();
   __ISB();
+    
   spi1Select();
   HAL_SPI_Transmit(&hspi1, &strobe, 1, 1);
   spi1Unselect();
+    
   __enable_irq();
 }
 
@@ -55,13 +64,16 @@ void CC2500_WriteTXData(uint8_t *packet, uint8_t length)
   uint8_t tx = CC2500_WRITE_BURST | CC2500_REG_TXFIFO;
   uint8_t zeroes[MAX_PACKET_SIZE] = {0}; // fix this obv
 
+  while (HAL_SPI_GetState(&hspi1) != HAL_SPI_STATE_READY){};
   __disable_irq();
   __DSB();
   __ISB();
+    
   spi1Select();
   HAL_SPI_Transmit(&hspi1, &tx, 1, 2);
   HAL_SPI_TransmitReceive(&hspi1, packet, zeroes, length, 2);
   spi1Unselect();
+    
   __enable_irq();
   
   CC2500_SetGPIOTxRxMode(TX_EN);
@@ -74,13 +86,16 @@ void CC2500_ReadRXData(uint8_t *packet, uint8_t length)
 
   uint8_t zeroes[MAX_PACKET_SIZE] = {0}; // fix this obv
   
+  while (HAL_SPI_GetState(&hspi1) != HAL_SPI_STATE_READY){};
   __disable_irq();
   __DSB();
   __ISB();
+  
   spi1Select();
   HAL_SPI_Transmit(&hspi1, &rx, 1, 2);
   HAL_SPI_TransmitReceive(&hspi1, zeroes, packet, length, 2);
   spi1Unselect();
+    
   __enable_irq();
 }
 
