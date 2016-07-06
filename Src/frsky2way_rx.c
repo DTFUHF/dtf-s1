@@ -1,8 +1,14 @@
 
 #include "board.h"
 
+#if defined ( __CC_ARM )
 __align(4) packet_union rxmsg;
 __align(4) packet_union txmsg;
+#else
+packet_union rxmsg __attribute__ ((aligned (4)));
+packet_union txmsg __attribute__ ((aligned (4)));
+
+#endif
 
 void frsky_rx_select_ant(uint8_t ant)
 {
