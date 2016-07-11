@@ -1,13 +1,13 @@
 
 #include "board.h"
 
-uint8_t fs1cal[NUM_HOP_CHANNELS], fs2cal[NUM_HOP_CHANNELS], fs3cal[NUM_HOP_CHANNELS];
+uint8_t fs1cal[D8_NUM_HOP_CHANNELS], fs2cal[D8_NUM_HOP_CHANNELS], fs3cal[D8_NUM_HOP_CHANNELS];
 
 /********************************
 * reset cc2500 and init registers
 *********************************/
 
-void frsky2way_init(void)
+void frsky_d8_rx_init(void)
 {
   CC2500_Reset();
   
@@ -16,8 +16,8 @@ void frsky2way_init(void)
   if (id != 0x80) // TODO: remove this, replace with something better
     while(1);
 
-  for (uint8_t i = 0; i < CC2500_INIT_ARRAY_SIZE; i++)
-    CC2500_WriteReg(initArray[i][0], initArray[i][1]);
+  for (uint8_t i = 0; i < D8_RX_CC2500_INIT_ARRAY_SIZE; i++)
+    CC2500_WriteReg(d8_rx_initArray[i][0], d8_rx_initArray[i][1]);
 
   CC2500_Strobe(CC2500_STROBE_SIDLE);
   CC2500_Strobe(CC2500_STROBE_SFRX);
@@ -28,9 +28,9 @@ void frsky_full_cal(void) // TODO: remove fs1cal and fs2cal tables as theres onl
 {
   CC2500_Strobe(CC2500_STROBE_SIDLE);
   HAL_Delay(2);
-  for (uint8_t i = 0; i < NUM_HOP_CHANNELS; i++)
+  for (uint8_t i = 0; i < D8_NUM_HOP_CHANNELS; i++)
   {
-    CC2500_WriteReg(CC2500_REG_CHANNR, m_config.frsky2way_bind_info.hopChannels[i]);
+    CC2500_WriteReg(CC2500_REG_CHANNR, m_config.frsky_d8_bind_info.hopChannels[i]);
     CC2500_Strobe(CC2500_STROBE_SCAL);
     HAL_Delay(2);
     fs1cal[i] = CC2500_ReadReg(CC2500_REG_FSCAL1);
@@ -45,7 +45,7 @@ void frsky_set_hopchan(uint8_t hopchan)
   CC2500_WriteReg(CC2500_REG_FSCAL1, fs1cal[hopchan]);
   CC2500_WriteReg(CC2500_REG_FSCAL2, fs2cal[hopchan]);
   CC2500_WriteReg(CC2500_REG_FSCAL3, fs3cal[hopchan]);
-  CC2500_WriteReg(CC2500_REG_CHANNR, m_config.frsky2way_bind_info.hopChannels[hopchan]);
+  CC2500_WriteReg(CC2500_REG_CHANNR, m_config.frsky_d8_bind_info.hopChannels[hopchan]);
 }
 
 void frsky_rx_enable(uint8_t hopchan)

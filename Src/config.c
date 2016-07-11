@@ -87,11 +87,11 @@ void config_defaults(void)
 {
   m_config.eeprom_version = EEPROM_VERSION;
   
-  m_config.frsky2way_bind_info.bind_type = BIND_TYPE_NONE;
-  m_config.frsky2way_bind_info.bind_id = 0x0000;
-  for (uint8_t i = 0; i < NUM_HOP_CHANNELS; i++)
+  m_config.frsky_d8_bind_info.bind_type = BIND_TYPE_NONE;
+  m_config.frsky_d8_bind_info.bind_id = 0x0000;
+  for (uint8_t i = 0; i < D8_NUM_HOP_CHANNELS; i++)
   {
-    m_config.frsky2way_bind_info.hopChannels[i] = 0x00;
+    m_config.frsky_d8_bind_info.hopChannels[i] = 0x00;
   }
   
   m_config.output_type = OUTPUT_AUTO;

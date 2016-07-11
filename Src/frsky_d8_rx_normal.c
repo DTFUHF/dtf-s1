@@ -38,9 +38,9 @@ enum {
 };
 
 /* init stuff for normal RXing. */
-void frsky_rx_normal_init(void)
+void frsky_d8_rx_normal_init(void)
 {
-  CC2500_WriteReg(CC2500_REG_ADDR, (uint8_t)m_config.frsky2way_bind_info.bind_id);
+  CC2500_WriteReg(CC2500_REG_ADDR, (uint8_t)m_config.frsky_d8_bind_info.bind_id);
   frsky_full_cal();
   
   switch(m_config.rssi_injection_type)
@@ -49,7 +49,7 @@ void frsky_rx_normal_init(void)
       num_frsky2way_channels = 8;
       break;
     case RSSI_INJECTION_AUTO:
-      switch(m_config.frsky2way_bind_info.bind_type)
+      switch(m_config.frsky_d8_bind_info.bind_type)
       {
         default:
         case BIND_TYPE_D8:
@@ -59,7 +59,7 @@ void frsky_rx_normal_init(void)
       }
       break;
     case RSSI_INJECTION_NONE:
-      switch(m_config.frsky2way_bind_info.bind_type)
+      switch(m_config.frsky_d8_bind_info.bind_type)
       {
         default:
         case BIND_TYPE_D8:
@@ -69,7 +69,7 @@ void frsky_rx_normal_init(void)
       break;
     case RSSI_INJECTION_CHAN:
       rssichan = m_config.rssi_injection_chan;
-      switch(m_config.frsky2way_bind_info.bind_type)
+      switch(m_config.frsky_d8_bind_info.bind_type)
       {
         default:
         case BIND_TYPE_D8:
@@ -81,7 +81,7 @@ void frsky_rx_normal_init(void)
   }
 }
 
-uint8_t frsky_rx_getpkt(void)
+uint8_t frsky_d8_rx_getpkt(void)
 {
   uint8_t ret = 0;
   if (HAL_GPIO_ReadPin(CC2500_GD0_GPIO, CC2500_GD0_PIN) == GPIO_PIN_SET)
@@ -92,11 +92,11 @@ uint8_t frsky_rx_getpkt(void)
     
     volatile uint8_t rx_packet_length = CC2500_ReadReg(CC2500_REG_RXBYTES | CC2500_READ_BURST);
     
-    if ((rx_packet_length > 7) && (rx_packet_length < MAX_PACKET_SIZE)) // TODO: fix this to detect pktlen from bindmode
+    if ((rx_packet_length > 7) && (rx_packet_length < D8_MAX_PACKET_SIZE)) // TODO: fix this to detect pktlen from bindmode
     {
       CC2500_ReadRXData(rxmsg.packet, rx_packet_length);
       
-      if ((rxmsg.rx_packet_data.header_bindcode == m_config.frsky2way_bind_info.bind_id) && (rxmsg.rx_packet_data.len == 0x11))
+      if ((rxmsg.d8_rx_packet_data.header_bindcode == m_config.frsky_d8_bind_info.bind_id) && (rxmsg.d8_rx_packet_data.len == 0x11))
         /* So, there's two bytes in the packet header that indicate something.
          * 0x0100 - North American launch day taranis A
          *        - DJT jr module
@@ -111,16 +111,16 @@ uint8_t frsky_rx_getpkt(void)
   return ret;
 }
 
-void frsky2way_build_telem_packet(void)
+void frsky2way_d8_build_telem_packet(void)
 {
-  for (uint8_t i=0; i<MAX_PACKET_SIZE; i++)
+  for ( uint8_t i = 0; i < D8_MAX_PACKET_SIZE; i++ )
   {
     txmsg.packet[i] = 0;
   }
   //  byte 0   = packet byte length not including 2byte crc
   txmsg.packet[0] = 17;
   //  byte 1,2 = bind code
-  txmsg.telem_packet_data.header_bindcode = m_config.frsky2way_bind_info.bind_id;
+  txmsg.d8_telem_packet_data.header_bindcode = m_config.frsky_d8_bind_info.bind_id;
   //  byte 3   = A1 52mV per unit
   txmsg.packet[3] = 0x00; // dummy
   //  byte 4   = A2 13.4mV per unit
@@ -139,19 +139,19 @@ void frsky_rx_process_channels(void)
   // assuming frsky D8 at the moment
   
   // sadly c does not support arrays of bitfields
-  channelValues[0] = (uint16_t)(((uint16_t)rxmsg.rx_packet_data.ch1_low | ((uint16_t)rxmsg.rx_packet_data.ch1_high << 8)) * 0.6666);
-  channelValues[1] = (uint16_t)(((uint16_t)rxmsg.rx_packet_data.ch2_low | ((uint16_t)rxmsg.rx_packet_data.ch2_high << 8)) * 0.6666);
-  channelValues[2] = (uint16_t)(((uint16_t)rxmsg.rx_packet_data.ch3_low | ((uint16_t)rxmsg.rx_packet_data.ch3_high << 8)) * 0.6666);
-  channelValues[3] = (uint16_t)(((uint16_t)rxmsg.rx_packet_data.ch4_low | ((uint16_t)rxmsg.rx_packet_data.ch4_high << 8)) * 0.6666);
-  channelValues[4] = (uint16_t)(((uint16_t)rxmsg.rx_packet_data.ch5_low | ((uint16_t)rxmsg.rx_packet_data.ch5_high << 8)) * 0.6666);
-  channelValues[5] = (uint16_t)(((uint16_t)rxmsg.rx_packet_data.ch6_low | ((uint16_t)rxmsg.rx_packet_data.ch6_high << 8)) * 0.6666);
-  channelValues[6] = (uint16_t)(((uint16_t)rxmsg.rx_packet_data.ch7_low | ((uint16_t)rxmsg.rx_packet_data.ch7_high << 8)) * 0.6666);
-  channelValues[7] = (uint16_t)(((uint16_t)rxmsg.rx_packet_data.ch8_low | ((uint16_t)rxmsg.rx_packet_data.ch8_high << 8)) * 0.6666);
+  channelValues[0] = (uint16_t)(((uint16_t)rxmsg.d8_rx_packet_data.ch1_low | ((uint16_t)rxmsg.d8_rx_packet_data.ch1_high << 8)) * 0.6666);
+  channelValues[1] = (uint16_t)(((uint16_t)rxmsg.d8_rx_packet_data.ch2_low | ((uint16_t)rxmsg.d8_rx_packet_data.ch2_high << 8)) * 0.6666);
+  channelValues[2] = (uint16_t)(((uint16_t)rxmsg.d8_rx_packet_data.ch3_low | ((uint16_t)rxmsg.d8_rx_packet_data.ch3_high << 8)) * 0.6666);
+  channelValues[3] = (uint16_t)(((uint16_t)rxmsg.d8_rx_packet_data.ch4_low | ((uint16_t)rxmsg.d8_rx_packet_data.ch4_high << 8)) * 0.6666);
+  channelValues[4] = (uint16_t)(((uint16_t)rxmsg.d8_rx_packet_data.ch5_low | ((uint16_t)rxmsg.d8_rx_packet_data.ch5_high << 8)) * 0.6666);
+  channelValues[5] = (uint16_t)(((uint16_t)rxmsg.d8_rx_packet_data.ch6_low | ((uint16_t)rxmsg.d8_rx_packet_data.ch6_high << 8)) * 0.6666);
+  channelValues[6] = (uint16_t)(((uint16_t)rxmsg.d8_rx_packet_data.ch7_low | ((uint16_t)rxmsg.d8_rx_packet_data.ch7_high << 8)) * 0.6666);
+  channelValues[7] = (uint16_t)(((uint16_t)rxmsg.d8_rx_packet_data.ch8_low | ((uint16_t)rxmsg.d8_rx_packet_data.ch8_high << 8)) * 0.6666);
   
   output_handle_functions.outputUpdate();
 }
 
-void frsky_rx_loop(void)
+void frsky_d8_rx_loop(void)
 {
   // TODO: disable LNA on high power rxing
   // TODO: rssi injection (and settings)
@@ -172,7 +172,7 @@ void frsky_rx_loop(void)
   uint32_t time = HAL_GetTick();
   uint8_t freqoff_est;
   
-  if (m_config.frsky2way_bind_info.bind_type == BIND_TYPE_NONE)
+  if (m_config.frsky_d8_bind_info.bind_type == BIND_TYPE_NONE)
   {
     /* do nothing if not bound. */
     return;
@@ -187,7 +187,7 @@ void frsky_rx_loop(void)
       /* end STATE_WILL_RX */
     
     case STATE_RXING:
-      if (frsky_rx_getpkt() != 0)
+      if (frsky_d8_rx_getpkt() != 0)
       {
         rx_state = STATE_RXD;
         break;
@@ -203,7 +203,7 @@ void frsky_rx_loop(void)
             /* lastHopTime is updated to the time the packet should have been received, which is the current nextPktTime. */
             /* nextPktTime is updated to reflect the next anticipated packet, in 9 or 18ms. */
             /* lastPktTime is untouched, as no real RXing was done. */
-            hopchan = (hopchan + 1) % NUM_HOP_CHANNELS;
+            hopchan = (hopchan + 1) % D8_NUM_HOP_CHANNELS;
             frsky_state = (frsky_state + 1) % NUM_FRSKY_STATES;
             frsky_rx_toggle_ant();
             lastHopTime = nextPktTime;
@@ -230,7 +230,7 @@ void frsky_rx_loop(void)
           /* hop every 45ms while looking for packets */
           if (time > (lastHopTime + 45))
           {
-            hopchan = (hopchan + 1) % NUM_HOP_CHANNELS;
+            hopchan = (hopchan + 1) % D8_NUM_HOP_CHANNELS;
             
             /* TODO: allow TXing while in failsafe. maybe? */
             frsky_state = FRSKY_RX1;
@@ -250,8 +250,8 @@ void frsky_rx_loop(void)
       /* nextPktTime is updated to reflect the next anticipated packet, in 9 or 18ms. */
       lastPktTime = time;
       lastHopTime = time;
-      hopchan = (rxmsg.packet[3] + 1) % NUM_HOP_CHANNELS;
-      frsky_state = (rxmsg.packet[3] + 1) % NUM_FRSKY_STATES; // sets up the next state
+      hopchan = (rxmsg.packet[3] + 1) % D8_NUM_HOP_CHANNELS;
+      frsky_state = (rxmsg.packet[3] + 1) % D8_NUM_HOP_CHANNELS; // sets up the next state
       fail_state = STATE_RUNNING;
       failsafeStatus = 0;
       HAL_GPIO_WritePin(LED_RED_GPIO, LED_RED_PIN, LED_RED_STATE_OFF);
@@ -290,7 +290,7 @@ void frsky_rx_loop(void)
       /* end STATE_RXD */
       
     case STATE_PREPARE_TX:
-      frsky2way_build_telem_packet();
+      frsky2way_d8_build_telem_packet();
       frsky_set_hopchan(hopchan);
       txStartTime = lastHopTime + 2; // set up time to activate txing.
       lastHopTime = lastHopTime + 9; // not actually lasthoptime, but keeps 9ms interval for simplicity.
@@ -315,7 +315,7 @@ void frsky_rx_loop(void)
       /* end STATE_TXING */
       
     case STATE_TXD:
-      hopchan = (hopchan + 1) % NUM_HOP_CHANNELS;
+      hopchan = (hopchan + 1) % D8_NUM_HOP_CHANNELS;
       frsky_state = FRSKY_RX1;
       rx_state = STATE_WILL_RX;
       break;

@@ -1,61 +1,28 @@
 
-#ifndef _FRSKY2WAY_H_
-#define _FRSKY2WAY_H_
+#ifndef _FRSKY_D8_RX_H_
+#define _FRSKY_D8_RX_H_
 
 #include "board.h"
 #include "cc2500.h"
 
-// bind info
-#define NUM_HOP_CHANNELS 47 // sized for d8 no clue about others
-struct frsky2way_bind_info_s {
-  uint8_t bind_type;
-  uint16_t bind_id;
-  uint8_t hopChannels[NUM_HOP_CHANNELS];
-};
-#define FRSKY_BIND_CHANNEL 0
+/******************* constants ************************************/
+#define D8_NUM_HOP_CHANNELS 47 // sized for d8 no clue about others
+#define D8_FRSKY_BIND_CHANNEL 0
+#define D8_MAX_PACKET_SIZE 22 // only need 17? or 20?
 
-#define MAX_PACKET_SIZE 22 // only need 17? or 20?
+/******************* exported RX D8 functions *********************/
+void frsky_d8_rx_init(void);
+void frsky_d8_rx_startup(void);
+/******************* binding **************************************/
+void frsky_d8_rx_bind_init(void);
+uint8_t frsky_d8_rx_binding(void);
+/******************* normal ***************************************/
+void frsky_d8_rx_normal_init(void);
+void frsky_d8_rx_loop(void);
 
-enum {
-  BIND_TYPE_NONE = 0,
-  BIND_TYPE_D8,
-  NUM_BIND_TYPES
-};
-
-enum {
-  RSSI_INJECTION_AUTO = 0,
-  RSSI_INJECTION_NONE,
-  RSSI_INJECTION_CHAN,
-  NUM_RSSI_INJECTION_TYPES
-};
-
-// common functions for tx/rx
-void frsky2way_init(void);
-void frsky_bind_cal(void);
-void frsky_full_cal(void);
-void frsky_set_hopchan(uint8_t);
-void frsky_set_chan(uint8_t);
-void frsky_rx_enable(uint8_t);
-
-// exported TX functions
-// void frsky2wayTXTaskFunction(void const *argument);
-
-// exported RX functions
-// common
-void frsky_rx_select_ant(uint8_t ant);
-void frsky_rx_toggle_ant(void);
-uint8_t frsky_getrssidbm(uint8_t);
-void frsky_rx_startup(void);
-// binding
-void frsky_rx_bind_init(void);
-uint8_t frsky_rx_binding(void);
-//normal
-void frsky_rx_normal_init(void);
-void frsky_rx_loop(void);
-
-// init array
-#define CC2500_INIT_ARRAY_SIZE 18
-static const uint8_t initArray[CC2500_INIT_ARRAY_SIZE][2] = 
+/******************* d8 init array ********************************/
+#define D8_RX_CC2500_INIT_ARRAY_SIZE 18
+static const uint8_t d8_rx_initArray[D8_RX_CC2500_INIT_ARRAY_SIZE][2] = 
 {
   {CC2500_REG_MCSM1,    0x0c}, // always clear channel, stay in RX when got pkt, go to idle after tx
   {CC2500_REG_MCSM0,    0x08}, // autocal never, med startup time, idle->tx/rx time with cal is 809us, without is 88.4us
@@ -77,14 +44,22 @@ static const uint8_t initArray[CC2500_INIT_ARRAY_SIZE][2] =
   {CC2500_REG_FOCCFG,   0x16}, // freq offset gating disable, enable clock recovery right away, freq compensation loop default
 };
 
-// RX packet structs and union
-struct bind_packet_data {
+/******************* RX packet structs and unions *****************/
+/******************* this is saved in eeprom **********************/
+struct frsky_d8_bind_info_s {
+  uint8_t bind_type;
+  uint16_t bind_id;
+  uint8_t hopChannels[D8_NUM_HOP_CHANNELS];
+};
+
+/******************* these are stored in ram for receiving pkts ***/
+struct d8_bind_packet_data_s {
   uint8_t len;
   uint16_t header1;
   uint16_t header2;
 } __attribute__ ((__packed__));
 
-struct rx_packet_data {
+struct d8_rx_packet_data_s {
   uint8_t len;
   uint16_t header_bindcode;
   uint8_t header_frsky_rx_state;
@@ -108,7 +83,7 @@ struct rx_packet_data {
   unsigned int ch8_high : 4;
 } __attribute__ ((__packed__));
 
-struct telem_packet_data {
+struct d8_telem_packet_data_s {
   uint8_t len;
   uint16_t header_bindcode;
   uint8_t telem_a1;
@@ -117,10 +92,10 @@ struct telem_packet_data {
 } __attribute__ ((__packed__));
 
 typedef union {
-  uint8_t packet[MAX_PACKET_SIZE];
-  struct bind_packet_data bind_packet_data;
-  struct rx_packet_data rx_packet_data;
-  struct telem_packet_data telem_packet_data;
+  uint8_t packet[D8_MAX_PACKET_SIZE];
+  struct d8_bind_packet_data_s d8_bind_packet_data;
+  struct d8_rx_packet_data_s d8_rx_packet_data;
+  struct d8_telem_packet_data_s d8_telem_packet_data;
 } packet_union;
 
-#endif
+#endif // _FRSKY_D8_RX_H_

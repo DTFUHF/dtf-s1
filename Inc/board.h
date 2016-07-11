@@ -6,7 +6,8 @@
 
 #include "drv_spi.h"
 #include "cc2500.h"
-#include "frsky2way.h"
+#include "frsky_rx.h"
+#include "frsky_d8_rx.h"
 #include "config.h"
 #include "rc_output.h"
 #include "drv_ppm.h"

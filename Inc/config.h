@@ -11,7 +11,7 @@
 #define MASTER_CONFIG_CRC_POLY 0x1021
 typedef struct master_config_t {
   uint16_t eeprom_version;
-  struct frsky2way_bind_info_s frsky2way_bind_info;
+  struct frsky_d8_bind_info_s frsky_d8_bind_info;
   uint8_t output_type;
   uint16_t failsafeValues[MAX_CHANNEL_OUTPUTS];
   uint8_t failsafeType;

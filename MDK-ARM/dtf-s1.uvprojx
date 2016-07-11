@@ -459,26 +459,6 @@
               <FilePath>..\Src\cc2500_tx_carrier_test.c</FilePath>
             </File>
             <File>
-              <FileName>frsky2way_common.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\frsky2way_common.c</FilePath>
-            </File>
-            <File>
-              <FileName>frsky2way_rx.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\frsky2way_rx.c</FilePath>
-            </File>
-            <File>
-              <FileName>frsky2way_rx_binding.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\frsky2way_rx_binding.c</FilePath>
-            </File>
-            <File>
-              <FileName>frsky2way_rx_normal.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\frsky2way_rx_normal.c</FilePath>
-            </File>
-            <File>
               <FileName>config.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\config.c</FilePath>
@@ -557,6 +537,26 @@
               <FileName>crc.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Src/crc.c</FilePath>
+            </File>
+            <File>
+              <FileName>frsky_d8_rx_binding.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\frsky_d8_rx_binding.c</FilePath>
+            </File>
+            <File>
+              <FileName>frsky_d8_rx_common.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\frsky_d8_rx_common.c</FilePath>
+            </File>
+            <File>
+              <FileName>frsky_d8_rx_normal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\frsky_d8_rx_normal.c</FilePath>
+            </File>
+            <File>
+              <FileName>frsky_rx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\frsky_rx.c</FilePath>
             </File>
           </Files>
         </Group>

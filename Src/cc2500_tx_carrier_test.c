@@ -3,7 +3,7 @@
 
 void tx_carrier_test(void)
 {
-  frsky2way_init(); // 2 403 999 847Hz
+  frsky_d8_rx_init(); // 2 403 999 847Hz
   CC2500_SetChan(0);
   CC2500_WriteReg(CC2500_REG_IOCFG0, 0x2D); // gd0 as input
   CC2500_WriteReg(CC2500_REG_PKTCTRL0, 0x32); // data in on GD0

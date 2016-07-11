@@ -99,16 +99,16 @@ int main(void)
   HAL_GPIO_WritePin(LED_GREEN_GPIO, LED_GREEN_PIN, LED_GREEN_STATE_OFF);
   
   eeprom_init_load();
-  frsky_rx_startup();
+  frsky_d8_rx_startup();
   
   // check for bindmode, or lack of any bind.
-  if ((HAL_GPIO_ReadPin(BIND_FAIL_BUTTON_GPIO, BIND_FAIL_BUTTON_PIN) == GPIO_PIN_RESET) || (m_config.frsky2way_bind_info.bind_type == BIND_TYPE_NONE))
+  if ((HAL_GPIO_ReadPin(BIND_FAIL_BUTTON_GPIO, BIND_FAIL_BUTTON_PIN) == GPIO_PIN_RESET) || (m_config.frsky_d8_bind_info.bind_type == BIND_TYPE_NONE))
   {
     // TODO: add leds
-    frsky_rx_bind_init();
+    frsky_d8_rx_bind_init();
     uint32_t blinktime = HAL_GetTick();
     
-    while(frsky_rx_binding() == 0)
+    while(frsky_d8_rx_binding() == 0)
     {
       HAL_Delay(1);
       if((HAL_GetTick() - blinktime) > 1000)
@@ -121,7 +121,7 @@ int main(void)
   }
   
   // prepare for normal RXing.
-  frsky_rx_normal_init();
+  frsky_d8_rx_normal_init();
   init_output(); // must be done after frsky init.
   
 
@@ -134,7 +134,7 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-    frsky_rx_loop();
+    frsky_d8_rx_loop();
 
   }
   /* USER CODE END 3 */
