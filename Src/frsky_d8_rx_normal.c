@@ -251,7 +251,7 @@ void frsky_d8_rx_loop(void)
       lastPktTime = time;
       lastHopTime = time;
       hopchan = (rxmsg.packet[3] + 1) % D8_NUM_HOP_CHANNELS;
-      frsky_state = (rxmsg.packet[3] + 1) % D8_NUM_HOP_CHANNELS; // sets up the next state
+      frsky_state = (rxmsg.packet[3] + 1) % NUM_FRSKY_STATES; // sets up the next state
       fail_state = STATE_RUNNING;
       failsafeStatus = 0;
       HAL_GPIO_WritePin(LED_RED_GPIO, LED_RED_PIN, LED_RED_STATE_OFF);
